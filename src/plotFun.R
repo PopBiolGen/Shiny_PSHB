@@ -21,14 +21,13 @@ plot_fun <- function(locLat, locLong, surv_weeks){
   months_ok <- top_grow %>%
     mutate(month = droplevels(month(date, label = TRUE, abbr = TRUE))) %>%
     count(month) %>%
-    filter(n >= 7) %>%
+    filter(n >= ifelse(surv_weeks > 2,
+                       7,
+                       2)) %>%
     arrange(month) %>%
     pull(month)
   
 growth_plot <- ggplot()+
-  geom_line(data = PAgrow_cum,
-            aes(x = date, y = cum_grow),
-            lwd=1.8)+
   
   scale_x_date(date_labels = "%b",
                date_breaks = "1 month",
@@ -36,7 +35,7 @@ growth_plot <- ggplot()+
                           max(PAgrow_cum$date)+1),
                name=NULL) + # want to remove 2nd 01-Jan
   
-  scale_y_continuous(name = "30-day cumulative growth rate",
+  scale_y_continuous(name = "PSHB population growth\n(30-day sum)",
                      limits = c(min(PAgrow_cum$cum_grow) - 0.05,
                           max(PAgrow_cum$cum_grow) + 0.05)) +
   
@@ -46,6 +45,10 @@ growth_plot <- ggplot()+
                 ymin= min(PAgrow_cum$cum_grow) - 0.05, 
                 ymax= max(PAgrow_cum$cum_grow) + 0.05), 
             fill="lightblue", alpha=0.8)+
+  
+  geom_line(data = PAgrow_cum,
+            aes(x = date, y = cum_grow),
+            lwd=1.8)+
   
   ggtitle(label = collapse_months(months_ok)) + # Call collapse function (lists months as title)
   
@@ -65,21 +68,27 @@ df <- data.frame(month_abb = c(unique(top_grow$month)),
                  surv = "y")
 month_data <- merge(month_data, df, by='month_abb', all.x=T)
 month_data[is.na(month_data)] <- "n" 
+month_data$surv <- factor(month_data$surv, levels = c("y", "n")) # make sure y always coloured blue
 
 cal_plot <- ggplot(month_data, aes(x = col, y = row)) +
-  geom_tile(color = "white", size = 1, fill = "lightgrey") +  # Create squares
-  geom_tile(data = subset(month_data,
-                          surv == "y"),
-            color = "white", size = 1, fill = "lightblue") +
+#  geom_tile(color = "white", size = 1, fill = "lightgrey") +  # Create squares
+  geom_tile(data = na.omit(month_data),
+            aes(fill = surv), 
+            color = "white", size = 1) +
   geom_text(aes(label = month_abb), color = "white", size = 6) + # Add labels
-#  scale_fill_manual(values = c("lightgrey","lightblue")) + # Colour gradient
+  scale_fill_manual(values = c("lightblue", "lightgrey")) + # Colour gradient
   theme_void() + # Clean background
   theme(legend.position = "none") # Remove legend
 
 
 plot_grid <- grid.arrange(cal_plot, growth_plot,
              nrow=2,
-             heights = c(2, 1))
+             heights = c(2, 1),
+             top = textGrob("Best months for PSHB surveys:", 
+                            gp=gpar(fontsize=20, 
+                                   # font = 3,
+                                   # fontface = 'bold.italic',
+                                    col = "lightblue")))
 
 return(plot_grid)
 }
