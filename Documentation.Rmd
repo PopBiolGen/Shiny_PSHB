@@ -3,31 +3,19 @@
 
 This app has been designed as a tool to assist with the monitoring and management of the polyphagous shot hole borer (PSHB, *Euwallacea fornicatus*) in Australia.
 
-Surveillance for PSHB can involve using lured traps and/or inspecting potential host trees for signs of infestation.
+PSHB surveillance involves using lured traps and/or inspecting potential host trees for signs of infestation. Early identification of new outbreaks is critical for managing this pest effectively. However, continuous survey efforts are not always feasible. This app predicts the best times of the year to conduct surveys as part of a broader PSHB management plan.
 
-Early identification of outbreaks is crucial for managing the pest effectively. However, continuous survey efforts are not always feasible.
+Surveys are more likely to detect PSHB when there is an higher abundance of beetles in the flying stage of their life cycle. This is when new trees are attacked, and when beetles are caught by traps. Surveys will therefore be most successful during periods of high population growth. Population growth is determined by temperature.
 
+###### Step 1: Select a location.
 
-This app predicts the best times of the year to survey for PSHB.
+Click on the map to select a location. PSHB population growth will be calculated over one year using daily climate data for the location. Daily growth rates are summed over a 30-day window, to give weight to extended periods of high growth.
 
-This is calculated according to the times when PSHB population growth is predicted to be highest, as  proxy for population size.
-
-Specifically, it estimates the population growth of adult beetles in the pre-oviposition stage. This is the dispersive stage that 1) attacks new trees and creates new entrance burrows, and 2) is captured by traps. 
-
-Survey efforts are more likely to detect PSHB outbreaks when there is an increase in the abundance of pre-ovipositing beetles.
-
-
-
-##### Step 1: Select a location.
-
-Click on the map to select a location. The PSHB population growth over one year will be calculated for that location's daily climate data. PSHB tend to become more abundant during warmer periods. Daily growth rate is converted to the cumulative growth rate over a 30-day window. This gives higher weighting to extended periods of growth rate.
-
-##### Step 2: Select number of survey weeks.
+###### Step 2: Select number of survey weeks.
 
 Adjust the total number of weeks in a year during which PSHB surveys can be conducted. The selected number of weeks with the highest PSHB growth are highlighted in <span style="color:lightblue">blue</span>. These periods (simplified to months in the calendars) are the best times to use resources for surveillance.
 
-
-NOTE: Predictions are based on 10-year averages for temperature data. Actual PSHB activity will vary depending on current climate.
+NOTE: Predictions are based on 10-year averages for daily temperature. Actual PSHB activity will vary depending on current climate.
 
 This app is built using the temperature-dependent PSHB population model described in:
 
