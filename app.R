@@ -29,10 +29,11 @@ ui <- page_fluid(
   layout_columns(
     col_width = 2,
   
-  card(leafletOutput("map"),
+  card("Choose a location",
+       leafletOutput("map"),
   
   sliderInput("weeks",
-              label = "Survey weeks",
+              label = "Number of survey weeks",
               min = 0, max = 52, value = 52),
   
   textOutput("selected_values")
@@ -42,6 +43,7 @@ ui <- page_fluid(
        plotOutput("plot"),
        
        textOutput("dates", container = h2))
+  
   ))
 
 
