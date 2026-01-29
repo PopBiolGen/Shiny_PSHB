@@ -47,18 +47,23 @@ ui <- page_fluid(
     ),
     
     mainPanel(
-  
+
+#fluidRow(  # Arrange inputs & outputs in columns or rows?
   layout_columns(
     col_width = 2,
   
-  card("Select a location",
+ card(span("Select a location",
+            style = "font-size:20px"),
        leafletOutput("map"),
   
   sliderInput("weeks",
-              label = "Select number of survey weeks",
+              label = span("Select number of survey weeks",
+                           style = "font-size:20px"),
               min = 0, max = 52, value = 52),
   
-  textOutput("selected_values")
+  
+  
+  span(textOutput("selected_values"), style = "font-size:10px")
   ),
   
   card(plotOutput("plot"),
@@ -101,13 +106,11 @@ server <- function(input, output, session) {
   
   # Print values (checking working)
   output$selected_values <- renderText({
-    req(clicked_point(), input$weeks)
+    req(clicked_point())
     
     paste(
       "Latitude =",  round(clicked_point()[["lat"]], 4),
-      "| Longitude =", round(clicked_point()[["lon"]], 4),
-      "| Survey Weeks =", input$weeks
-    )
+      "| Longitude =", round(clicked_point()[["lon"]], 4))
   })
   
   output$plot <- renderPlot({
