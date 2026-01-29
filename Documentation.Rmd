@@ -1,0 +1,35 @@
+
+
+
+This app has been designed as a tool to assist with the monitoring and management of the polyphagous shot hole borer (PSHB, *Euwallacea fornicatus*) in Australia.
+
+Surveillance for PSHB can involve using lured traps and/or inspecting potential host trees for signs of infestation.
+
+Early identification of outbreaks is crucial for managing the pest effectively. However, continuous survey efforts are not always feasible.
+
+
+This app predicts the best times of the year to survey for PSHB.
+
+This is calculated according to the times when PSHB population growth is predicted to be highest, as  proxy for population size.
+
+Specifically, it estimates the population growth of adult beetles in the pre-oviposition stage. This is the dispersive stage that 1) attacks new trees and creates new entrance burrows, and 2) is captured by traps. 
+
+Survey efforts are more likely to detect PSHB outbreaks when there is an increase in the abundance of pre-ovipositing beetles.
+
+
+
+##### Step 1: Select a location.
+
+Click on the map to select a location. The PSHB population growth over one year will be calculated for that location's daily climate data. PSHB tend to become more abundant during warmer periods. Daily growth rate is converted to the cumulative growth rate over a 30-day window. This gives higher weighting to extended periods of growth rate.
+
+##### Step 2: Select number of survey weeks.
+
+Adjust the total number of weeks in a year during which PSHB surveys can be conducted. The selected number of weeks with the highest PSHB growth are highlighted in <span style="color:lightblue">blue</span>. These periods (simplified to months in the calendars) are the best times to use resources for surveillance.
+
+
+NOTE: Predictions are based on 10-year averages for temperature data. Actual PSHB activity will vary depending on current climate.
+
+This app is built using the temperature-dependent PSHB population model described in:
+
+Coates, A., & Phillips, B. (2026). Boring Beetles and Super Models: Mapping Potential Distributions of a New Invader. *Journal of Biogeography*, *53*(1), e70136. https://doi.org/10.1111/jbi.70136
+
