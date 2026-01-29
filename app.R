@@ -12,7 +12,10 @@ library(ozmaps)
 library(sf)
 library(zoo)
 library(ggplot2)
+library(grid)
 library(gridExtra)
+library(markdown)
+library(knitr)
 #sf_oz <- subset(ozmap("country"))
 
 source("src/TPCFunctions.R")
@@ -21,28 +24,48 @@ source("src/growthFun.R")
 source("src/plotFun.R")
 source("src/collapse_monthsFun.R")
 
+rmdfiles <- c("Documentation.rmd")
+sapply(rmdfiles, knit, quiet = T)
+
 # Define UI ----
 ui <- page_fluid(
   
-  titlePanel("TITLE_NAME"),
+  titlePanel("PSHB Survey Planner"),
+  
+  sidebarLayout(
+    
+    # Information /ReadMe in sidebar
+    sidebarPanel(
+      
+      fluidRow(
+        div(withMathJax(includeMarkdown("Documentation.md")), style = "font-size: 15px;"),
+      
+      div(
+        # you can add input selectors here as needed
+        img(src = "PBG_Curtin_Logo.png", width="100%")
+      ))
+    ),
+    
+    mainPanel(
   
   layout_columns(
     col_width = 2,
   
-  card("Choose a location",
+  card("Select a location",
        leafletOutput("map"),
   
   sliderInput("weeks",
-              label = "Number of survey weeks",
+              label = "Select number of survey weeks",
               min = 0, max = 52, value = 52),
   
   textOutput("selected_values")
   ),
   
-  card("Best survey periods",
-       plotOutput("plot"),
+  card(plotOutput("plot"),
        
        textOutput("dates", container = h2))
+  )
+    )
   
   ))
 
