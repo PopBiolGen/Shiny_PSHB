@@ -35,7 +35,7 @@ growth_plot <- ggplot()+
                           max(PAgrow_cum$date)+1),
                name=NULL) + # want to remove 2nd 01-Jan
   
-  scale_y_continuous(name = "PSHB population growth\n(30-day sum)",
+  scale_y_continuous(name = "PSHB growth\n(30-day sum)\n",
                      limits = c(min(PAgrow_cum$cum_grow) - 0.05,
                           max(PAgrow_cum$cum_grow) + 0.05)) +
   
@@ -55,6 +55,7 @@ growth_plot <- ggplot()+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.x = element_text(hjust = 0.05, size = 12),
+        axis.title.y = element_text(size = 14),
         plot.title = element_text(size = 16))
 
 # CALENDAR PLOT
@@ -86,10 +87,10 @@ plot_grid <- grid.arrange(cal_plot, growth_plot,
              heights = c(2, 1),
              top = textGrob(paste("Best months for PSHB surveys:",
                                   collapse_months(months_ok)),
-                            gp=gpar(fontsize=20, 
+                            gp=gpar(fontsize=20))) 
                                    # font = 3,
                                    # fontface = 'bold.italic',
-                                    col = "lightblue")))
+                                    #col = "lightblue")))
 
 return(plot_grid)
 }
