@@ -28,29 +28,12 @@ rmdfiles <- c("Documentation.rmd")
 sapply(rmdfiles, knit, quiet = T)
 
 # Define UI ----
-ui <- page_fluid(
-  
-  titlePanel("PSHB Survey Planner"),
-  
-  sidebarLayout(
+ui <- page_navbar(title = "PSHB Survey Planner", # Separate tab with Readme
     
-    # Information /ReadMe in sidebar
-    sidebarPanel(
-      
-      fluidRow(
-        div(withMathJax(includeMarkdown("Documentation.md")), style = "font-size: 15px;"),
-      
-      div(
-        # you can add input selectors here as needed
-        img(src = "PBG_Curtin_Logo.png", width="100%")
-      ))
-    ),
-    
-    mainPanel(
-
-#fluidRow(  # Arrange inputs & outputs in columns or rows?
-  layout_columns(
-    col_width = 2,
+    nav_panel(title = "Survey planner",
+              
+              layout_columns(
+                col_widths = c(5,7),
   
  card(span("Select a location",
             style = "font-size:20px"),
@@ -59,20 +42,29 @@ ui <- page_fluid(
   sliderInput("weeks",
               label = span("Select number of survey weeks",
                            style = "font-size:20px"),
-              min = 0, max = 52, value = 52),
+              min = 1, max = 52, value = 52),
   
   
-  
-  span(textOutput("selected_values"), style = "font-size:10px")
+  span(textOutput("selected_values"), style = "font-size:10px") # Disaply selected coords
   ),
   
-  card(plotOutput("plot"),
-       
-       textOutput("dates", container = h2))
-  )
-    )
+  card(plotOutput("plot"))
+ 
+ )
+),
+
+nav_panel(title = "Read me",
+          
+          fluidRow(
+            div(withMathJax(includeMarkdown("Documentation.md")), style = "font-size: 15px;"),
+            
+            
+            # you can add input selectors here as needed
+            img(src = "PBG_Curtin_Logo.png", width="100%")
+          )
+)
   
-  ))
+  )
 
 
 # Define server logic ----
@@ -83,7 +75,7 @@ server <- function(input, output, session) {
   output$map <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%  # OpenStreetMap tiles
-      setView(lng = 133, lat = -25, zoom = 4)  # Australia-ish
+      setView(lng = 133, lat = -25, zoom = 3)  # Australia-ish
   })
   
   ### Store clicked coordinates
