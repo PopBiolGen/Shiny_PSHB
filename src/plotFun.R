@@ -26,7 +26,7 @@ plot_fun <- function(locLat, locLong, surv_weeks){
                        2)) %>%
     arrange(month) %>%
     pull(month)
-  
+    
 growth_plot <- ggplot()+
   
   scale_x_date(date_labels = "%b",
@@ -50,7 +50,7 @@ growth_plot <- ggplot()+
             aes(x = date, y = cum_grow),
             lwd=1.8)+
   
-  ggtitle(label = collapse_months(months_ok)) + # Call collapse function (lists months as title)
+ # ggtitle(label = collapse_months(months_ok)) + # Call collapse function (lists months as title)
   
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
@@ -84,7 +84,8 @@ cal_plot <- ggplot(month_data, aes(x = col, y = row)) +
 plot_grid <- grid.arrange(cal_plot, growth_plot,
              nrow=2,
              heights = c(2, 1),
-             top = textGrob("Best months for PSHB surveys:", 
+             top = textGrob(paste("Best months for PSHB surveys:",
+                                  collapse_months(months_ok)),
                             gp=gpar(fontsize=20, 
                                    # font = 3,
                                    # fontface = 'bold.italic',
