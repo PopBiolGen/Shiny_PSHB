@@ -55,8 +55,7 @@ growth_plot <- ggplot()+
   theme(panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(),
         axis.text.x = element_text(hjust = 0.05, size = 12),
-        axis.title.y = element_text(size = 14),
-        plot.title = element_text(size = 16))
+        axis.title.y = element_text(size = 16))
 
 # CALENDAR PLOT
 month_data <- data.frame(
