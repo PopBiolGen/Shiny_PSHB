@@ -1,6 +1,5 @@
 
-#### UI object ####
-## (Can put this in separate script, then 'source' here in app.R)
+#### PSHB Survey Spp ####
 
 library(shiny)
 library(bslib)
@@ -16,7 +15,6 @@ library(grid)
 library(gridExtra)
 library(markdown)
 library(knitr)
-#sf_oz <- subset(ozmap("country"))
 
 source("src/TPCFunctions.R")
 source("src/modelFunctions_tyears.R")
@@ -42,7 +40,7 @@ ui <- page_navbar(title = "PSHB Survey Planner", # Separate tab with Readme
   sliderInput("weeks",
               label = span("Select number of survey weeks",
                            style = "font-size:20px"),
-              min = 1, max = 52, value = 52),
+              min = 1, max = 52, value = 10),
   
   
   span(textOutput("selected_values"), style = "font-size:10px") # Disaply selected coords
@@ -56,11 +54,11 @@ ui <- page_navbar(title = "PSHB Survey Planner", # Separate tab with Readme
 nav_panel(title = "Read me",
           
           fluidRow(
-            div(withMathJax(includeMarkdown("Documentation.md")), style = "font-size: 15px;"),
+            div(withMathJax(includeMarkdown("Documentation.md")), style = "font-size: 17px;"),
             
             
             # you can add input selectors here as needed
-            img(src = "PBG_Curtin_Logo.png", width="100%")
+            img(src = "PBG_Curtin_Logo.png", width="200px")
           )
 )
   
@@ -75,11 +73,13 @@ server <- function(input, output, session) {
   output$map <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%  # OpenStreetMap tiles
-      setView(lng = 133, lat = -25, zoom = 3)  # Australia-ish
+      setView(lng = 135, lat = -26, zoom = 4)  %>% # Centre on Australia
+      addMarkers(lng = 115.830, lat = -31.963)
   })
   
-  ### Store clicked coordinates
-  clicked_point <- reactiveVal(NULL)
+  ### Store clicked coordinates as reactive value
+  clicked_point <- reactiveVal(c(lat = -31.963, # Start on King's Park, Perth
+                                 lon = 115.830))
   
   ### When user clicks on the map
   observeEvent(input$map_click, {
@@ -96,7 +96,7 @@ server <- function(input, output, session) {
   })
 
   
-  # Print values (checking working)
+  # Print coord values
   output$selected_values <- renderText({
     req(clicked_point())
     
@@ -105,18 +105,26 @@ server <- function(input, output, session) {
       "| Longitude =", round(clicked_point()[["lon"]], 4))
   })
   
+  # Save input values as eventReactive object (use these stablised values to run model)
+  plot_inputs <- eventReactive( 
+    list(clicked_point(), input$weeks),
+    {
+      list(
+        lat   = clicked_point()[["lat"]],
+        lon   = clicked_point()[["lon"]],
+        weeks = input$weeks
+      )
+    }
+  )
+  
   output$plot <- renderPlot({
-    
-    req(clicked_point(), input$weeks)
-    
-    locLat <- clicked_point()[["lat"]]
-    locLong <- clicked_point()[["lon"]]
-    surv_weeks <- input$weeks
-    
-    plot_fun(locLat,
-             locLong,
-             surv_weeks)
-    
+    req(plot_inputs())
+    # Run plot function
+    plot_fun( 
+      locLat     = plot_inputs()$lat, # Feed values from eventReactive
+      locLong    = plot_inputs()$lon,
+      surv_weeks = plot_inputs()$weeks
+    )
   })
   
   
