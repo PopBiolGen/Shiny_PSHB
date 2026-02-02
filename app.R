@@ -22,8 +22,8 @@ source("src/growthFun.R")
 source("src/plotFun.R")
 source("src/collapse_monthsFun.R")
 
-rmdfiles <- c("Documentation.rmd")
-sapply(rmdfiles, knit, quiet = T)
+#rmdfiles <- c("Documentation.rmd")
+#sapply(rmdfiles, knit, quiet = T)
 
 # Define UI ----
 ui <- page_navbar(title = "PSHB Survey Planner", # Separate tab with Readme
