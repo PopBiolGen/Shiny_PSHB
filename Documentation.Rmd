@@ -13,11 +13,15 @@ Click on the map to select a location. PSHB population growth will be calculated
 
 ##### Step 2: Select number of survey weeks.
 
-Adjust the total number of weeks in a year during which PSHB surveys can be conducted. The selected number of weeks with the highest PSHB growth are highlighted in **<span style="color:lightblue">blue</span>**. These periods (simplified to months in the calendars) are the best times to use resources for surveillance.
-
-
-NOTE: Predictions are based on 10-year averages for daily temperature. Actual PSHB activity will vary depending on current climate.
-
+Adjust the total number of weeks in a year during which PSHB surveys can be conducted. The selected number of weeks with the highest PSHB growth are highlighted in **<span style="color:lightblue">blue</span>**. These periods (simplified to months in the calendars) are the best times to use resources for surveillance.<br>
+  
+  
+NOTE: Predictions are based on 10-year averages for daily temperature. Actual PSHB activity will vary depending on current climate.<br>
+  
+  
+If you found this tool useful, or can think of ways to improve it, please let us know at andrew.coates@curtin.edu.au<br>
+  
+  
 This app is built using the temperature-dependent PSHB population model described in:
 Coates, A., & Phillips, B. (2026). Boring Beetles and Super Models: Mapping Potential Distributions of a New Invader. *Journal of Biogeography*, *53*(1), e70136. https://doi.org/10.1111/jbi.70136
 
