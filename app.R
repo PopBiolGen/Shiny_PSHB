@@ -58,7 +58,8 @@ nav_panel(title = "Read me",
             
             
             # you can add input selectors here as needed
-            img(src = "PBG_Curtin_Logo.png", width="200px")
+            tags$a(img(src = "PBG_Curtin_Logo.png", width="800px"),
+            href="https://popbiolgenomics.org/")
           )
 )
   
