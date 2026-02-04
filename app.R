@@ -74,7 +74,7 @@ server <- function(input, output, session) {
   output$map <- renderLeaflet({
     leaflet() %>%
       addTiles() %>%  # OpenStreetMap tiles
-      setView(lng = 135, lat = -26, zoom = 4)  %>% # Centre on Australia
+      setView(lng = 135, lat = -26, zoom = 3.5)  %>% # Centre on Australia
       addMarkers(lng = 115.830, lat = -31.963)
   })
   
