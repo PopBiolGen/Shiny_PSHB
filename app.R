@@ -119,13 +119,31 @@ server <- function(input, output, session) {
   )
   
   output$plot <- renderPlot({
+    
     req(plot_inputs())
-    # Run plot function
-    plot_fun( 
-      locLat     = plot_inputs()$lat, # Feed values from eventReactive
-      locLong    = plot_inputs()$lon,
-      surv_weeks = plot_inputs()$weeks
-    )
+    
+    res <- tryCatch({ # Catch error when plotting
+      
+      plot_fun(
+        locLat     = plot_inputs()$lat,
+        locLong    = plot_inputs()$lon,
+        surv_weeks = plot_inputs()$weeks
+      )
+      
+    }, error = function(e) {
+      
+      if (grepl("HTTP \\(502\\)", e$message)) { # If SILO is down, we get Error 502
+        return(NULL)  # If error message is 502, res <- NULL
+      }
+      
+      stop(e)  # rethrow error (if not 502)
+    })
+    
+    validate(
+      need(!is.null(res), # If res<-NULL, print error message
+           "Climate data from SILO may be unavailable between 11am and 1pm (Brisbane time) each Wednesday and Thursday to allow for essential system maintenance")
+    ) # If plotting is successful, validate automatically returns plot instead
+    
   })
   
   
