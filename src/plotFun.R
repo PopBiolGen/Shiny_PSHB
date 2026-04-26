@@ -114,10 +114,18 @@ plot_fun <- function(grow_data, surv_weeks = 10, mode = "period", n_surveys = 4)
     theme(legend.position = "none")
 
   # ---- Combine ----
+  # Convert to grobs and align column widths so plot panels are horizontally flush
+  g_cal    <- ggplotGrob(cal_plot)
+  g_growth <- ggplotGrob(growth_plot)
+
+  max_widths      <- grid::unit.pmax(g_cal$widths, g_growth$widths)
+  g_cal$widths    <- max_widths
+  g_growth$widths <- max_widths
+
   plot_grid <- grid.arrange(
-    cal_plot, growth_plot,
+    g_cal, g_growth,
     nrow    = 2,
-    heights = c(2, 1),
+    heights = c(1, 2),
     top     = textGrob(plot_title, gp = gpar(fontsize = 18))
   )
 

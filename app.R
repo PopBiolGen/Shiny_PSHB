@@ -83,6 +83,11 @@ nav_panel(title = "Read me",
   )
 
 
+# Pre-compute Australia boundary once at startup
+aus_boundary <- sf::st_union(ozmap_states) |>
+  sf::st_transform(4326)
+
+
 # Define server logic ----
 
 server <- function(input, output, session) {
@@ -101,12 +106,22 @@ server <- function(input, output, session) {
   
   ### When user clicks on the map
   observeEvent(input$map_click, {
-    
+
     lat <- input$map_click$lat
     lng <- input$map_click$lng
-    
-    clicked_point(c(lat = lat, lon = lng)) # Save Coords
-    
+
+    # Validate point is within Australia
+    point  <- sf::st_sfc(sf::st_point(c(lng, lat)), crs = 4326)
+    in_aus <- sf::st_within(point, aus_boundary, sparse = FALSE)[1, 1]
+
+    if (!in_aus) {
+      showNotification("Please select a location within Australia.",
+                       type = "warning", duration = 4)
+      return()
+    }
+
+    clicked_point(c(lat = lat, lon = lng)) # Save coords
+
     # Update map: clear old markers, add new one
     leafletProxy("map") %>%
       clearMarkers() %>%
