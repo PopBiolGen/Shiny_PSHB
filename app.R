@@ -37,10 +37,26 @@ ui <- page_navbar(title = "PSHB Survey Planner", # Separate tab with Readme
             style = "font-size:20px"),
        leafletOutput("map"),
   
-  sliderInput("weeks",
-              label = span("Select number of survey weeks",
-                           style = "font-size:20px"),
-              min = 1, max = 52, value = 10),
+  radioButtons("survey_mode",
+               label = span("Survey type", style = "font-size:20px"),
+               choices = c("Survey period" = "period",
+                           "Multiple surveys" = "multiple"),
+               selected = "period",
+               inline = TRUE),
+
+  conditionalPanel(
+    condition = "input.survey_mode == 'period'",
+    sliderInput("weeks",
+                label = span("Number of survey weeks", style = "font-size:20px"),
+                min = 1, max = 52, value = 10)
+  ),
+
+  conditionalPanel(
+    condition = "input.survey_mode == 'multiple'",
+    sliderInput("n_surveys",
+                label = span("Number of surveys per year", style = "font-size:20px"),
+                min = 1, max = 12, value = 4)
+  ),
   
   
   span(textOutput("selected_values"), style = "font-size:10px") # Disaply selected coords
@@ -108,12 +124,14 @@ server <- function(input, output, session) {
   
   # Save input values as eventReactive object (use these stablised values to run model)
   plot_inputs <- eventReactive( 
-    list(clicked_point(), input$weeks),
+    list(clicked_point(), input$weeks, input$survey_mode, input$n_surveys),
     {
       list(
-        lat   = clicked_point()[["lat"]],
-        lon   = clicked_point()[["lon"]],
-        weeks = input$weeks
+        lat       = clicked_point()[["lat"]],
+        lon       = clicked_point()[["lon"]],
+        weeks     = input$weeks,
+        mode      = input$survey_mode,
+        n_surveys = input$n_surveys
       )
     }
   )
@@ -127,7 +145,9 @@ server <- function(input, output, session) {
       plot_fun(
         locLat     = plot_inputs()$lat,
         locLong    = plot_inputs()$lon,
-        surv_weeks = plot_inputs()$weeks
+        surv_weeks = plot_inputs()$weeks,
+        mode       = plot_inputs()$mode,
+        n_surveys  = plot_inputs()$n_surveys
       )
       
     }, error = function(e) {
