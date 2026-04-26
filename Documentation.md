@@ -22,15 +22,36 @@ calculated over one year using daily climate data for that location.
 Daily growth rates are summed over a 30-day window, to give weight to
 extended periods of high growth.
 
-##### Step 2: Select number of survey weeks.
+##### Step 2: Choose a survey type and set your parameters.
+
+The app offers two ways to plan your surveys:
+
+---
+
+**Survey period**
 
 Adjust the total number of weeks in a year during which PSHB surveys can
-be conducted. The selected number of weeks with the highest PSHB growth
-are highlighted in **<span style="color:lightblue">blue</span>**. These
-weeks are rounded to the most important months in the calendar grid. These are the best times of year for the resources for surveillance to be allocated.<br>
+be conducted. The weeks with the highest PSHB growth are highlighted in
+**<span style="color:lightblue">blue</span>**. These weeks are rounded
+to the most important months in the calendar grid. These are the best
+times of year for surveillance resources to be allocated.
+
+---
+
+**Multiple surveys**
+
+If your surveillance plan involves a fixed number of discrete surveys
+spread across the year, select *Multiple surveys* and use the slider to
+specify how many surveys (1–12) you intend to conduct. The app will find
+the optimal timing for that number of equally-spaced surveys, maximising
+the total PSHB activity captured across all survey visits. Optimal
+survey dates are marked on the growth curve and the corresponding months
+are highlighted in the calendar grid.
+
+---
 
 ###### NOTE: 
-Predictions are based on 10-year averages for daily temperature.
+Predictions are based on 10-year averages (2013–2023) for daily temperature.
 Actual PSHB activity will vary across years depending on current climate.<br>
 
 If you found this tool useful, or can think of ways to improve it,
