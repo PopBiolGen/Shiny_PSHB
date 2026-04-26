@@ -15,6 +15,7 @@ library(grid)
 library(gridExtra)
 library(markdown)
 library(knitr)
+library(shinycssloaders)
 
 source("src/TPCFunctions.R")
 source("src/modelFunctions_tyears.R")
@@ -62,7 +63,7 @@ ui <- page_navbar(title = "PSHB Survey Planner", # Separate tab with Readme
   span(textOutput("selected_values"), style = "font-size:10px") # Disaply selected coords
   ),
   
-  card(plotOutput("plot"))
+  card(withSpinner(plotOutput("plot")))
  
  )
 ),
