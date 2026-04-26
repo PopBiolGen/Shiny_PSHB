@@ -122,48 +122,38 @@ server <- function(input, output, session) {
       "| Longitude =", round(clicked_point()[["lon"]], 4))
   })
   
-  # Save input values as eventReactive object (use these stablised values to run model)
-  plot_inputs <- eventReactive( 
-    list(clicked_point(), input$weeks, input$survey_mode, input$n_surveys),
-    {
-      list(
-        lat       = clicked_point()[["lat"]],
-        lon       = clicked_point()[["lon"]],
-        weeks     = input$weeks,
-        mode      = input$survey_mode,
-        n_surveys = input$n_surveys
-      )
-    }
-  )
-  
-  output$plot <- renderPlot({
-    
-    req(plot_inputs())
-    
-    res <- tryCatch({ # Catch error when plotting
-      
-      plot_fun(
-        locLat     = plot_inputs()$lat,
-        locLong    = plot_inputs()$lon,
-        surv_weeks = plot_inputs()$weeks,
-        mode       = plot_inputs()$mode,
-        n_surveys  = plot_inputs()$n_surveys
-      )
-      
-    }, error = function(e) {
-      
-      if (grepl("HTTP \\(502\\)", e$message)) { # If SILO is down, we get Error 502
-        return(NULL)  # If error message is 502, res <- NULL
+  # Expensive reactive: fetch climate data + run population model
+  # Keyed on location only — not re-run when survey settings change
+  grow_data <- eventReactive(clicked_point(), {
+    tryCatch(
+      list(ok = TRUE,
+           data = growth_loc_fun(clicked_point()[["lat"]],
+                                 clicked_point()[["lon"]])),
+      error = function(e) {
+        if (grepl("HTTP \\(502\\)", e$message))
+          return(list(ok = FALSE, data = NULL))
+        stop(e)
       }
-      
-      stop(e)  # rethrow error (if not 502)
-    })
-    
+    )
+  })
+
+  # Cheap reactive: re-renders whenever survey settings change, using cached data
+  output$plot <- renderPlot({
+
+    result <- grow_data()
+
     validate(
-      need(!is.null(res), # If res<-NULL, print error message
+      need(result$ok,
            "Climate data from SILO may be unavailable between 11am and 1pm (Brisbane time) each Wednesday and Thursday to allow for essential system maintenance")
-    ) # If plotting is successful, validate automatically returns plot instead
-    
+    )
+
+    plot_fun(
+      grow_data  = result$data,
+      surv_weeks = input$weeks,
+      mode       = input$survey_mode,
+      n_surveys  = input$n_surveys
+    )
+
   })
   
   

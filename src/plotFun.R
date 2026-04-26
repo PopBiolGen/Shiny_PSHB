@@ -18,9 +18,9 @@ find_optimal_surveys <- function(grow_df, n_surveys) {
 }
 
 
-plot_fun <- function(locLat, locLong, surv_weeks = 10, mode = "period", n_surveys = 4) {
+plot_fun <- function(grow_data, surv_weeks = 10, mode = "period", n_surveys = 4) {
 
-  PAgrow_cum <- growth_loc_fun(locLat, locLong) # Calc cumulative growth values
+  PAgrow_cum <- grow_data
 
   # ---- Shared axis / theme settings ----
   x_scale <- scale_x_date(
