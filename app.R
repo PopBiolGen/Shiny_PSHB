@@ -15,6 +15,7 @@ library(grid)
 library(gridExtra)
 library(markdown)
 library(knitr)
+library(shinycssloaders)
 
 source("src/TPCFunctions.R")
 source("src/modelFunctions_tyears.R")
@@ -37,16 +38,32 @@ ui <- page_navbar(title = "PSHB Survey Planner", # Separate tab with Readme
             style = "font-size:20px"),
        leafletOutput("map"),
   
-  sliderInput("weeks",
-              label = span("Select number of survey weeks",
-                           style = "font-size:20px"),
-              min = 1, max = 52, value = 10),
+  radioButtons("survey_mode",
+               label = span("Survey type", style = "font-size:20px"),
+               choices = c("Survey period" = "period",
+                           "Multiple surveys" = "multiple"),
+               selected = "period",
+               inline = TRUE),
+
+  conditionalPanel(
+    condition = "input.survey_mode == 'period'",
+    sliderInput("weeks",
+                label = span("Number of survey weeks", style = "font-size:20px"),
+                min = 1, max = 52, value = 10)
+  ),
+
+  conditionalPanel(
+    condition = "input.survey_mode == 'multiple'",
+    sliderInput("n_surveys",
+                label = span("Number of surveys per year", style = "font-size:20px"),
+                min = 1, max = 12, value = 4)
+  ),
   
   
   span(textOutput("selected_values"), style = "font-size:10px") # Disaply selected coords
   ),
   
-  card(plotOutput("plot"))
+  card(withSpinner(plotOutput("plot")))
  
  )
 ),
@@ -64,6 +81,11 @@ nav_panel(title = "Read me",
 )
   
   )
+
+
+# Pre-compute Australia boundary once at startup
+aus_boundary <- sf::st_union(ozmap_states) |>
+  sf::st_transform(4326)
 
 
 # Define server logic ----
@@ -84,12 +106,22 @@ server <- function(input, output, session) {
   
   ### When user clicks on the map
   observeEvent(input$map_click, {
-    
+
     lat <- input$map_click$lat
     lng <- input$map_click$lng
-    
-    clicked_point(c(lat = lat, lon = lng)) # Save Coords
-    
+
+    # Validate point is within Australia
+    point  <- sf::st_sfc(sf::st_point(c(lng, lat)), crs = 4326)
+    in_aus <- sf::st_within(point, aus_boundary, sparse = FALSE)[1, 1]
+
+    if (!in_aus) {
+      showNotification("Please select a location within Australia.",
+                       type = "warning", duration = 4)
+      return()
+    }
+
+    clicked_point(c(lat = lat, lon = lng)) # Save coords
+
     # Update map: clear old markers, add new one
     leafletProxy("map") %>%
       clearMarkers() %>%
@@ -106,44 +138,38 @@ server <- function(input, output, session) {
       "| Longitude =", round(clicked_point()[["lon"]], 4))
   })
   
-  # Save input values as eventReactive object (use these stablised values to run model)
-  plot_inputs <- eventReactive( 
-    list(clicked_point(), input$weeks),
-    {
-      list(
-        lat   = clicked_point()[["lat"]],
-        lon   = clicked_point()[["lon"]],
-        weeks = input$weeks
-      )
-    }
-  )
-  
-  output$plot <- renderPlot({
-    
-    req(plot_inputs())
-    
-    res <- tryCatch({ # Catch error when plotting
-      
-      plot_fun(
-        locLat     = plot_inputs()$lat,
-        locLong    = plot_inputs()$lon,
-        surv_weeks = plot_inputs()$weeks
-      )
-      
-    }, error = function(e) {
-      
-      if (grepl("HTTP \\(502\\)", e$message)) { # If SILO is down, we get Error 502
-        return(NULL)  # If error message is 502, res <- NULL
+  # Expensive reactive: fetch climate data + run population model
+  # Keyed on location only — not re-run when survey settings change
+  grow_data <- eventReactive(clicked_point(), {
+    tryCatch(
+      list(ok = TRUE,
+           data = growth_loc_fun(clicked_point()[["lat"]],
+                                 clicked_point()[["lon"]])),
+      error = function(e) {
+        if (grepl("HTTP \\(502\\)", e$message))
+          return(list(ok = FALSE, data = NULL))
+        stop(e)
       }
-      
-      stop(e)  # rethrow error (if not 502)
-    })
-    
+    )
+  })
+
+  # Cheap reactive: re-renders whenever survey settings change, using cached data
+  output$plot <- renderPlot({
+
+    result <- grow_data()
+
     validate(
-      need(!is.null(res), # If res<-NULL, print error message
+      need(result$ok,
            "Climate data from SILO may be unavailable between 11am and 1pm (Brisbane time) each Wednesday and Thursday to allow for essential system maintenance")
-    ) # If plotting is successful, validate automatically returns plot instead
-    
+    )
+
+    plot_fun(
+      grow_data  = result$data,
+      surv_weeks = input$weeks,
+      mode       = input$survey_mode,
+      n_surveys  = input$n_surveys
+    )
+
   })
   
   

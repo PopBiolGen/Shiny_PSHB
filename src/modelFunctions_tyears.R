@@ -12,7 +12,6 @@
 ## load up the packages we will need 
 ## ---------------------------
 source("src/TPCFunctions.R")
-source("src/greta/greta_valid_inits.R")
 
 ## Scalar parameters
 
@@ -63,7 +62,7 @@ get_env_data <- function(lat, long){
       "min_temp",
       "rh_tmax"
     ),
-    api_key = "andrew.coates@curtin.edu.au" #Sys.getenv("SILO_API_KEY")
+    api_key = Sys.getenv("SILO_API_KEY")
   )
  #calculate 1 month moving average temp in lieu of soil temp at 100cm
  wd <- wd %>% dplyr::mutate(DOY = yday(dmy(paste(day, month, year, sep = "-")))) %>%
