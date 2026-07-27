@@ -27,60 +27,95 @@ source("src/collapse_monthsFun.R")
 #sapply(rmdfiles, knit, quiet = T)
 
 # Define UI ----
-ui <- page_navbar(title = "PSHB Survey Planner", # Separate tab with Readme
-    
-    nav_panel(title = "Survey planner",
-              
-              layout_columns(
-                col_widths = c(5,7),
-  
- card(span("Select a location",
-            style = "font-size:20px"),
-       leafletOutput("map"),
-  
-  radioButtons("survey_mode",
-               label = span("Survey type", style = "font-size:20px"),
-               choices = c("Survey period" = "period",
-                           "Multiple surveys" = "multiple"),
-               selected = "period",
-               inline = TRUE),
+ui <- page_navbar(
+  title        = "PSHB Survey Planner",
+  theme        = bs_theme(bootswatch = "flatly"),
+  window_title = "PSHB Survey Planner",
 
-  conditionalPanel(
-    condition = "input.survey_mode == 'period'",
-    sliderInput("weeks",
-                label = span("Number of survey weeks", style = "font-size:20px"),
-                min = 1, max = 52, value = 10)
+  # ---- Survey planner tab ----
+  nav_panel(
+    title = "Survey planner",
+
+    layout_sidebar(
+      sidebar = sidebar(
+        width = 300,
+
+        p(class = "text-muted small",
+          "Click on the map to choose a location. PSHB population growth",
+          "will be predicted for that location using daily climate data."
+        ),
+
+        hr(),
+
+        radioButtons("survey_mode",
+                     label = "Survey type",
+                     choices = c("Survey period" = "period",
+                                 "Multiple surveys" = "multiple"),
+                     selected = "period",
+                     inline = TRUE),
+
+        conditionalPanel(
+          condition = "input.survey_mode == 'period'",
+          sliderInput("weeks",
+                      label = "Number of survey weeks",
+                      min = 1, max = 52, value = 10)
+        ),
+
+        conditionalPanel(
+          condition = "input.survey_mode == 'multiple'",
+          sliderInput("n_surveys",
+                      label = "Number of surveys per year",
+                      min = 1, max = 12, value = 4)
+        ),
+
+        hr(),
+
+        div(class = "text-muted small", textOutput("selected_values"))
+      ),
+
+      layout_columns(
+        col_widths = c(6, 6),
+
+        card(
+          full_screen = TRUE,
+          padding = 0,
+          card_header("Map"),
+          leafletOutput("map", height = "600px")
+        ),
+
+        card(
+          full_screen = TRUE,
+          card_header("Predicted survey timing"),
+          withSpinner(plotOutput("plot", height = "600px"))
+        )
+      )
+    )
   ),
 
-  conditionalPanel(
-    condition = "input.survey_mode == 'multiple'",
-    sliderInput("n_surveys",
-                label = span("Number of surveys per year", style = "font-size:20px"),
-                min = 1, max = 12, value = 4)
-  ),
-  
-  
-  span(textOutput("selected_values"), style = "font-size:10px") # Disaply selected coords
-  ),
-  
-  card(withSpinner(plotOutput("plot")))
- 
- )
-),
+  # ---- Read me tab ----
+  nav_panel(
+    title = "Read me",
 
-nav_panel(title = "Read me",
-          
-          fluidRow(
-            div(withMathJax(includeMarkdown("Documentation.md")), style = "font-size: 17px;"),
-            
-            
-            # you can add input selectors here as needed
-            tags$a(img(src = "PBG_Curtin_Logo.png", width="800px"),
-            href="https://popbiolgenomics.org/")
-          )
-)
-  
+    div(
+      class = "container py-4",
+      style = "max-width: 860px;",
+
+      withMathJax(includeMarkdown("Documentation.md")),
+
+      hr(),
+
+      div(
+        class = "text-center",
+        tags$a(
+          href = "https://popbiolgenomics.org/",
+          target = "_blank",
+          img(src = "PBG_Curtin_Logo.png",
+              style = "max-width: 320px; width: 100%; height: auto;")
+        )
+      )
+    )
   )
+)
 
 
 # Pre-compute Australia boundary once at startup
